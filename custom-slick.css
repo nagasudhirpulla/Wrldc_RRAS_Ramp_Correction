@@ -1,0 +1,31 @@
+/*SlickGrid extras*/
+
+.slick-header-column.ui-state-default {
+    height: auto;
+    line-height: normal;
+}
+
+.slick-header-column.ui-state-default {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 1px;
+    padding-right: 0;
+}
+
+.ui-datepicker td .ui-state-default {
+    color: blue;
+}
+
+.slick-cell.selected {
+    background-color: #d7f4e4;
+}
+
+.slick-cell.copied {
+    background: blue;
+    background: rgba(0, 0, 255, 0.2);
+    -webkit-transition: 0.5s background;
+}
+
+.slick-column-name {
+    font-weight: bold;
+}

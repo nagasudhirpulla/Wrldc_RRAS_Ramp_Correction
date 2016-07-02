@@ -1,0 +1,28 @@
+.code_create_div_column_float_left {
+    float: left;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.entity_selector_div_column_float_left {
+    float: left;
+    margin-right: 10px;
+}
+
+.scrollable_ul{
+    list-style-type:none;
+    padding: 0px;
+    margin: 0px;
+    overflow:hidden;
+    overflow-y:scroll;
+    border: 1px solid darkslategray;
+}
+
+.scrollable_ul > li:nth-child(even){
+    background:#ccc;
+}
+
+.scrollable_ul > li{
+    margin-bottom: 5px ;
+    padding-right: 5px;
+}
