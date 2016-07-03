@@ -51,7 +51,7 @@ function rrasSolve(){
 					data[i]["rrasupRes"] = rrasup - ramped + ramp; //example ramp = 70; ramped = 80
 				} else if(!(rrasdown==0 && Number(data[i-1]["rrasdown"])==0)){
 					ismodified = true;
-					data[i]["rrasdownRes"] = Number(data[i-1]["rrasdownRes"]) - ramp;
+					data[i]["rrasdownRes"] = Number(data[i]["rrasdownRes"]) - ramp;
 				}
 				if(ismodified){
 					data[i]["newnetschedule"] = Number(data[i]["netschedule"]) - ramped + ramp;
@@ -65,7 +65,7 @@ function rrasSolve(){
 					data[i]["rrasdownRes"] = rrasdown + ramped + ramp; //example ramp = 70; ramped = -100
 					ismodified = true;
 				}else if(!(rrasup==0 && Number(data[i-1]["rrasup"])==0)){
-					data[i]["rrasupRes"] = data[i-1]["rrasup"] - ramp; //example ramp = 70; ramped = -100
+					data[i]["rrasupRes"] = data[i]["rrasup"] - ramp; //example ramp = 70; ramped = -100
 					ismodified = true;
 				}
 				if(ismodified){
