@@ -49,15 +49,12 @@ function rrasSolve(){
 				if(rrasup - ramped + ramp > 0 && !(rrasup==0 && Number(data[i-1]["rrasupRes"])==0)){
 					ismodified = true;
 					data[i]["rrasupRes"] = rrasup - ramped + ramp; //example ramp = 70; ramped = 80
-					data[i]["rrasupRes"] = "" + data[i]["rrasupRes"];
 				} else if(!(rrasdown==0 && Number(data[i-1]["rrasdown"])==0)){
 					ismodified = true;
 					data[i]["rrasdownRes"] = Number(data[i-1]["rrasdownRes"]) - ramp;
-					data[i]["rrasdownRes"] = "" + data[i]["rrasdownRes"];
 				}
 				if(ismodified){
 					data[i]["newnetschedule"] = Number(data[i]["netschedule"]) - ramped + ramp;
-					data[i]["newnetschedule"] = "" + data[i]["newnetschedule"];
 				}
 			}else{
 				//negative ramping issue or rras down issue
@@ -66,16 +63,13 @@ function rrasSolve(){
 				
 				if(rrasdown + ramped + ramp > 0 && !(rrasdown==0 && Number(data[i-1]["rrasdownRes"])==0)){
 					data[i]["rrasdownRes"] = rrasdown + ramped + ramp; //example ramp = 70; ramped = -100
-					data[i]["rrasdownRes"] = "" + data[i]["rrasdownRes"];
 					ismodified = true;
 				}else if(!(rrasup==0 && Number(data[i-1]["rrasup"])==0)){
 					data[i]["rrasupRes"] = data[i-1]["rrasup"] - ramp; //example ramp = 70; ramped = -100
-					data[i]["rrasupRes"] = "" + data[i]["rrasupRes"];
 					ismodified = true;
 				}
 				if(ismodified){
 					data[i]["newnetschedule"] = Number(data[i]["netschedule"]) - ramped - ramp;
-					data[i]["newnetschedule"] = "" + data[i]["newnetschedule"];
 				}
 			}
 		}
