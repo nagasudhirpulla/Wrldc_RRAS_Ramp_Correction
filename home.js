@@ -16,7 +16,7 @@ function getDisplayCodes() {
 	//create data for grid
 	var data = [];
 	for(var i= 0 ;i<96;i++){
-		data.push({"blk":i+1, "netschedule":0, "ramp":70, "rrasup":0,"rrasdown":0, "newnetschedule":0, "rrasupRes":0,"rrasdownRes":0});
+		data.push({"blk":i+1, "netschedule":"0", "ramp":"70", "rrasup":"0","rrasdown":"0", "newnetschedule":"0", "rrasupRes":"0","rrasdownRes":"0"});
 	}
 	grid = setUpGrid(data);
 }
@@ -49,12 +49,15 @@ function rrasSolve(){
 				if(rrasup - ramped + ramp > 0 && !(rrasup==0 && Number(data[i-1]["rrasupRes"])==0)){
 					ismodified = true;
 					data[i]["rrasupRes"] = rrasup - ramped + ramp; //example ramp = 70; ramped = 80
+					data[i]["rrasupRes"] = "" + data[i]["rrasupRes"];
 				} else if(!(rrasdown==0 && Number(data[i-1]["rrasdown"])==0)){
 					ismodified = true;
 					data[i]["rrasdownRes"] = Number(data[i-1]["rrasdownRes"]) - ramp;
+					data[i]["rrasdownRes"] = "" + data[i]["rrasdownRes"];
 				}
 				if(ismodified){
 					data[i]["newnetschedule"] = Number(data[i]["netschedule"]) - ramped + ramp;
+					data[i]["newnetschedule"] = "" + data[i]["newnetschedule"];
 				}
 			}else{
 				//negative ramping issue or rras down issue
@@ -63,13 +66,16 @@ function rrasSolve(){
 				
 				if(rrasdown + ramped + ramp > 0 && !(rrasdown==0 && Number(data[i-1]["rrasdownRes"])==0)){
 					data[i]["rrasdownRes"] = rrasdown + ramped + ramp; //example ramp = 70; ramped = -100
+					data[i]["rrasdownRes"] = "" + data[i]["rrasdownRes"];
 					ismodified = true;
 				}else if(!(rrasup==0 && Number(data[i-1]["rrasup"])==0)){
 					data[i]["rrasupRes"] = data[i-1]["rrasup"] - ramp; //example ramp = 70; ramped = -100
+					data[i]["rrasupRes"] = "" + data[i]["rrasupRes"];
 					ismodified = true;
 				}
 				if(ismodified){
 					data[i]["newnetschedule"] = Number(data[i]["netschedule"]) - ramped - ramp;
+					data[i]["newnetschedule"] = "" + data[i]["newnetschedule"];
 				}
 			}
 		}
