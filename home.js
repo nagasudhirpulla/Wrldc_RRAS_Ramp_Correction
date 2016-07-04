@@ -82,11 +82,28 @@ function rrasSolve(){
 		}
 		//Now do the schedule>dc check
 		//if sch>dc reduce rras up
+		if(data[i]["dc"]!=0){//should not neglect
+			if(+data[i]["newnetschedule"] > +data[i]["dc"]){
+				//we have sch > dc problem
+				var diff = +data[i]["newnetschedule"] - data[i]["dc"];
+				data[i]["rrasupRes"] = data[i]["rrasup"] - diff;
+			}
+		}
 		//if sch<techmin reduce rras down
-		
+		if(data[i]["techmin"]!=0){//should not neglect
+			if(+data[i]["newnetschedule"] < +data[i]["techmin"]){
+				//we have sch < techmin problem
+				var diff = +data[i]["techmin"] - data[i]["newnetschedule"];
+				data[i]["rrasdownRes"] = data[i]["rrasdownRes"] - diff;
+			}
+		}
 		//In the end if rras up or down are < zero make them zero
-		
-		
+		if(data[i]["rrasdownRes"] < 0){
+			data[i]["rrasdownRes"] = 0;
+		}
+		if(data[i]["rrasupRes"] < 0){
+			data[i]["rrasupRes"] = 0;
+		}
 	}
 	grid.setData(data);
 	grid.render();
