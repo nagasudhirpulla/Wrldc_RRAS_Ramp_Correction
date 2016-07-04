@@ -15,7 +15,7 @@ function getDisplayCodes() {
 	//create data for grid
 	var data = [];
 	for(var i= 0 ;i<96;i++){
-		data.push({"blk":i+1, "netschedule":"0", "ramp":"70","isgs":"0", "rrasup":"0","rrasdown":"0", "newnetschedule":"0", "rrasupRes":"0","rrasdownRes":"0"});
+		data.push({"blk":i+1, "netschedule":"0", "ramp":"70", "dc":"0", "techmin":"0", "isgs":"0", "rrasup":"0","rrasdown":"0", "newnetschedule":"0", "rrasupRes":"0","rrasdownRes":"0"});
 	}
 	grid = setUpGrid(data);
 }
@@ -80,6 +80,13 @@ function rrasSolve(){
 				}
 			}
 		}
+		//Now do the schedule>dc check
+		//if sch>dc reduce rras up
+		//if sch<techmin reduce rras down
+		
+		//In the end if rras up or down are < zero make them zero
+		
+		
 	}
 	grid.setData(data);
 	grid.render();
