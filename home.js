@@ -104,6 +104,8 @@ function rrasSolve(){
 		if(data[i]["rrasupRes"] < 0){
 			data[i]["rrasupRes"] = 0;
 		}
+		//correct the newnetschedule after changes
+		data[i]["newnetschedule"] = data[i]["isgs"] + data[i]["rrasupRes"] - data[i]["rrasdownRes"]
 	}
 	grid.setData(data);
 	grid.render();
