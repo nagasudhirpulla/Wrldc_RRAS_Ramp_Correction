@@ -86,7 +86,7 @@ function rrasSolve(){
 			if(+data[i]["newnetschedule"] > +data[i]["dc"]){
 				//we have sch > dc problem
 				var diff = +data[i]["newnetschedule"] - data[i]["dc"];
-				data[i]["rrasupRes"] = data[i]["rrasup"] - diff;
+				data[i]["rrasupRes"] = data[i]["rrasupRes"] - diff;
 			}
 		}
 		//if sch<techmin reduce rras down
