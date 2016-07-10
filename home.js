@@ -23,7 +23,7 @@ function getDisplayCodes() {
 function rrasSolve(){
 	var data = grid.getData();
 	//first convert negative values to possitive for net schedule,rras up and down
-	for(var i= 1;i<96;i++){
+	for(var i= 0;i<96;i++){
 		if(Number(data[i]["netschedule"]) < 0){
 			data[i]["netschedule"] = -Number(data[i]["netschedule"]);
 		}
