@@ -22,16 +22,19 @@ function getDisplayCodes() {
 
 function rrasSolve(){
 	var data = grid.getData();
-	//first convert negative values to possitive for net schedule,rras up and down
+	//first strip commas and convert negative values to possitive for net schedule,rras up and down
 	for(var i= 0;i<96;i++){
+		data[i]["netschedule"] = data[i]["netschedule"].replace(/\,/g,'');
+		data[i]["rrasup"] = data[i]["rrasup"].replace(/\,/g,'');
+		data[i]["rrasdown"] = data[i]["rrasdown"].replace(/\,/g,'');
 		if(Number(data[i]["netschedule"]) < 0){
-			data[i]["netschedule"] = -Number(data[i]["netschedule"].replace(/\,/g,''));
+			data[i]["netschedule"] = -Number(data[i]["netschedule"]);
 		}
 		if(Number(data[i]["rrasup"]) < 0){
-			data[i]["rrasup"] = -Number(data[i]["rrasup"].replace(/\,/g,''));
+			data[i]["rrasup"] = -Number(data[i]["rrasup"]);
 		}
 		if(Number(data[i]["rrasdown"]) < 0){
-			data[i]["rrasdown"] = -Number(data[i]["rrasdown"].replace(/\,/g,''));
+			data[i]["rrasdown"] = -Number(data[i]["rrasdown"]);
 		}
 	}
 	data[0]["newnetschedule"] = Number(data[0]["netschedule"]);
