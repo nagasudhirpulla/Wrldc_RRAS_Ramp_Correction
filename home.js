@@ -158,4 +158,5 @@ function createRRASText(){
 	copyStr += "\n";
 	copyStr += rrasDnCpys.join("\t");
 	console.log("rras copy string is " + copyStr);
+	document.getElementById("fileDisplayArea").innerHTML = copyStr;
 }
