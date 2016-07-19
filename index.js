@@ -1,242 +1,145 @@
-var genNames = [];
+var mRldcIdsArray = [];
+var mGrid; //The cell grid object.
+document.onreadystatechange = function () {
+    if (document.readyState == "interactive") {
 
-var resAIArray;
-var resOBArray = [];
-var resSCHArray = [];
-var resRDNArray = [];
-var resRUPArray = [];
-var resTNArray = [];
-
-var rrasUpVals = [];
-var rrasDownVals = [];
-var schVals = [];
-var dcVals = [];
-var tmVals = [];
-var rUpVals = [];
-var rDnVals = [];
-
-var fileIterator = 0;
-var filesArray = [];
-
-//file reader feature
-window.onload = function () {
-    var fileInput = document.getElementById('fileInput');
-    var fileDisplayArea = document.getElementById('fileDisplayArea');
-    fileInput.addEventListener('change', function (e) {
-        filesArray = [];
-        for (var b = 0; b < fileInput.files.length; b++) {
-            filesArray.push(fileInput.files[b]);
-        }
-        fileInput.value = "";
-        fileIterator = 0;
-        //reset all arrays
-        resAIArray = [];
-        resOBArray = [];
-        resSCHArray = [];
-        resRDNArray = [];
-        resRUPArray = [];
-        resTNArray = [];
-        afterEachRead();
-    });
-    //readTextFile("file:///C:/Users/Nagasudhir/Documents/WBESWareHousing/schedules/cgpl-isgs.js");
+    } else if (document.readyState == "complete") {
+        onDomComplete();
+    }
 };
-
-//file reader feature
-function loadNext() {
-    filesArray[fileIterator] = null;
-    fileIterator = fileIterator + 1;
-    if (fileIterator < filesArray.length) {
-        afterEachRead();
-    }
+function onDomComplete() {
+    getDisplayCodes();
 }
 
-//file reader feature
-function afterEachRead() {
-    var reader = new FileReader();
-    var file = filesArray[fileIterator];
-    if (file.name.includes("WRAI")) {
-        //var reader = new FileReader();
-        reader.onload = function (e) {
-            resAIArray = CSVToArray(reader.result);
-            //fileDisplayArea.innerText = reader.result;
-            //do something with the text here
-            console.log("The parsed file is ");
-            console.log(resAIArray);
-            //get the options for drop down
-            genNames = [];
-            for (var i = 1; i < resAIArray.length; i++) {
-                genNames.push(resAIArray[i][0]);
-            }
-            var unique = genNames.filter(function (elem, index, self) {
-                return index == self.indexOf(elem);
-            });
-            genNames = unique;
-            console.log(genNames);
-            populateSelect(genNames, document.getElementById('gen_select'));
-            loadNext();
-        };
-        reader.readAsText(file);
-    } else if (file.name.includes("WRIDCOB")) {
-        //var reader = new FileReader();
-        reader.onload = function (e) {
-            resOBArray = CSVToArray(reader.result);
-            //fileDisplayArea.innerText = reader.result;
-            loadNext();
-        };
-        reader.readAsText(file);
-    } else if (file.name.includes("WRISCH")) {
-        //var reader = new FileReader();
-        reader.onload = function (e) {
-            resSCHArray = CSVToArray(reader.result);
-            //fileDisplayArea.innerText = reader.result;
-            loadNext();
-        };
-        reader.readAsText(file);
-    } else if (file.name.includes("WRRDN")) {
-        //var reader = new FileReader();
-        reader.onload = function (e) {
-            resRDNArray = CSVToArray(reader.result);
-            //fileDisplayArea.innerText = reader.result;
-            loadNext();
-        };
-        reader.readAsText(file);
-    } else if (file.name.includes("WRRUP")) {
-        //var reader = new FileReader();
-        reader.onload = function (e) {
-            resRUPArray = CSVToArray(reader.result);
-            //fileDisplayArea.innerText = reader.result;
-            loadNext();
-        };
-        reader.readAsText(file);
-    } else if (file.name.includes("WRTN")) {
-        //var reader = new FileReader();
-        reader.onload = function (e) {
-            resTNArray = CSVToArray(reader.result);
-            //fileDisplayArea.innerText = reader.result;
-            loadNext();
-        };
-        reader.readAsText(file);
-    }
-    loadNext();
+function getDisplayCodes() {
+	//create data for grid
+	var data = [];
+	for(var i= 0 ;i<96;i++){
+		data.push({"blk":i+1, "netschedule":"0", "ramp":"70", "dc":"0", "techmin":"0", "isgs":"0", "rrasup":"0","rrasdown":"0", "newnetschedule":"0", "rrasupRes":"0","rrasdownRes":"0"});
+	}
+	mGrid = setUpGrid(data);
 }
 
-//not needed and does not work in computer
-function readTextFile(file) {
-    var fileDisplayArea = document.getElementById('fileDisplayArea');
-    var rawFile = new XMLHttpRequest();
-    rawFile.open("GET", file, false);
-    rawFile.onreadystatechange = function () {
-        if (rawFile.readyState === 4) {
-            if (rawFile.status === 200 || rawFile.status == 0) {
-                var allText = rawFile.responseText;
-                fileDisplayArea.innerText = allText
-            }
-        }
-    };
-    rawFile.send(null);
-}
+function rrasSolve(){
+	var changes = {};
+	var data = mGrid.getData();
+	//first strip commas and convert negative values to possitive for net schedule,rras up and down
+	for(var i= 0;i<96;i++){
+		data[i]["netschedule"] = data[i]["netschedule"].replace(/\,/g,'');
+		data[i]["rrasup"] = data[i]["rrasup"].replace(/\,/g,'');
+		data[i]["rrasdown"] = data[i]["rrasdown"].replace(/\,/g,'');
+		if(Number(data[i]["netschedule"]) < 0){
+			data[i]["netschedule"] = -Number(data[i]["netschedule"]);
+		}
+		if(Number(data[i]["rrasup"]) < 0){
+			data[i]["rrasup"] = -Number(data[i]["rrasup"]);
+		}
+		if(Number(data[i]["rrasdown"]) < 0){
+			data[i]["rrasdown"] = -Number(data[i]["rrasdown"]);
+		}
+	}
+	data[0]["newnetschedule"] = Number(data[0]["netschedule"]);
+	data[0]["rrasdownRes"] = Number(data[0]["rrasdown"]);
+	data[0]["rrasupRes"] = Number(data[0]["rrasup"]);
+	for(var i= 0;i<96;i++){
+		data[i]["isgs"] = Number(data[i]["netschedule"]) - Number(data[i]["rrasup"]) + Number(data[i]["rrasdown"]);
+	}
+	for(var i= 1;i<96;i++){
+		//block = i+1;
+		var rrasup = Number(data[i]["rrasup"]);
+		var rrasdown = Number(data[i]["rrasdown"]);
+		var netschprev = Number(data[i-1]["newnetschedule"]);
+		var netsch = Number(data[i]["isgs"]) + rrasup - rrasdown;
+		var ramped = netsch - netschprev;
+		var isgsprev = Number(data[i - 1]["isgs"]);
+		var isgs = Number(data[i]["isgs"]);
+		var ramp = Number(data[i]["ramp"]);
+		var ismodified;
+		//copy input values
+		data[i]["newnetschedule"] = netsch;
+		data[i]["rrasdownRes"] = Number(data[i]["rrasdown"]);
+		data[i]["rrasupRes"] = Number(data[i]["rrasup"]);
+		if(Math.abs(ramped) > ramp){			
+			//violated rows
+			if(ramped>0){
+				//possitive ramping issue or rras up issue
+				//reduce rras up by ramped-ramp
+				ismodified = false;
+				
+				if(rrasup - ramped + ramp > 0 && !(rrasup==0 && Number(data[i-1]["rrasupRes"])==0)){
+					ismodified = true;
+					data[i]["rrasupRes"] = rrasup - ramped + ramp; //example ramp = 70; ramped = 80
+					//reduce the rras up
+				} else if(!(rrasdown==0 && Number(data[i-1]["rrasdown"])==0)){
+					ismodified = true;
+					data[i]["rrasdownRes"] = Number(data[i]["rrasdownRes"]) + ramped - ramp;
+					//increase the rras down
+				}
+				if(ismodified){
+					data[i]["newnetschedule"] = netsch - ramped + ramp;
+				}
+			}else{
+				//negative ramping issue or rras down issue
+				//increase rras down by ramped-ramp
+				ismodified = false;
+				
+				if(rrasdown + ramped + ramp > 0 && !(rrasdown==0 && Number(data[i-1]["rrasdownRes"])==0)){
+					data[i]["rrasdownRes"] = rrasdown + ramped + ramp; //example ramp = 70; ramped = -100
+					ismodified = true;
+				}else if(!(rrasup==0 && Number(data[i-1]["rrasup"])==0)){
+					data[i]["rrasupRes"] = data[i]["rrasup"] - ramped - ramp; //example ramp = 70; ramped = -100
+					ismodified = true;
+					//increase the rras up
+				}
+				if(ismodified){
+					data[i]["newnetschedule"] = netsch - ramped - ramp;
+				}
+			}
+		}
+		//Now do the schedule>dc check
+		//if sch>dc reduce rras up
+		if(data[i]["dc"]!=0){//should not neglect
+			if(+data[i]["newnetschedule"] > +data[i]["dc"]){
+				//we have sch > dc problem
+				var diff = +data[i]["newnetschedule"] - data[i]["dc"];
+				data[i]["rrasupRes"] = data[i]["rrasupRes"] - diff;
+			}
+		}
+		//if sch<techmin reduce rras down
+		if(data[i]["techmin"]!=0){//should not neglect
+			if(+data[i]["newnetschedule"] < +data[i]["techmin"]){
+				//we have sch < techmin problem
+				var diff = +data[i]["techmin"] - data[i]["newnetschedule"];
+				data[i]["rrasdownRes"] = data[i]["rrasdownRes"] - diff;
+			}
+		}
+		//In the end if rras up or down are < zero make them zero
+		if(data[i]["rrasdownRes"] < 0){
+			data[i]["rrasdownRes"] = 0;
+		}
+		if(data[i]["rrasupRes"] < 0){
+			data[i]["rrasupRes"] = 0;
+		}
+		//correct the newnetschedule after changes
+		data[i]["newnetschedule"] = data[i]["isgs"] + data[i]["rrasupRes"] - data[i]["rrasdownRes"];
 
-//for UI
-function populateSelect(genNms, genSelEl) {
-    for (var i = 0; i < genNms.length; i++) {
-        var opt = document.createElement('option');
-        opt.innerHTML = genNms[i];
-        opt.value = genNms[i];
-        genSelEl.appendChild(opt);
-    }
-}
+		//highlight if rras up changed
+		if(data[i]["rrasupRes"] != data[i]["rrasup"]){
+			if (!changes[i]) {
+				changes[i] = {};
+			}
+			changes[i]["rrasupRes"] = "changed";
+		}
 
-//for algorithm
-function getAllIndexes(arr, val) {
-    var indexes = [], i = -1;
-    while ((i = arr.indexOf(val, i + 1)) != -1) {
-        indexes.push(i);
-    }
-    return indexes;
-}
-
-//for algorithm
-function getGenVals() {
-    rrasDownVals = [];
-    rrasUpVals = [];
-    var gen = document.getElementById('gen_select').options[document.getElementById('gen_select').selectedIndex].value;
-    //search for generator in array of rrras
-    var leftCol = [];
-    for (var i = 0; i < resAIArray.length; i++) {
-        leftCol.push(resAIArray[i][0]);
-    }
-    var rrasUpDnRows = getAllIndexes(leftCol, gen);
-    for (var i = 0; i < rrasUpDnRows.length; i++) {
-        if (resAIArray[rrasUpDnRows[i]][1] == "DOWN") {
-            for (var k = 0; k < 96; k++) {
-                rrasDownVals.push(resAIArray[rrasUpDnRows[i]][k + 2]);
-            }
-        } else if (resAIArray[rrasUpDnRows[i]][1] == "UP") {
-            for (var k = 0; k < 96; k++) {
-                rrasUpVals.push(resAIArray[rrasUpDnRows[i]][k + 2]);
-            }
-        }
-    }
-    //search for generator in array of schedule
-    leftCol = [];
-    for (var i = 0; i < resSCHArray.length; i++) {
-        leftCol.push(resSCHArray[i][0]);
-    }
-    var schRows = getAllIndexes(leftCol, gen);
-    schVals = [];
-    for (var k = 0; k < 96; k++) {
-        schVals.push(resSCHArray[schRows[0]][k + 1]);
-    }
-    //search for generator in array of onBarDC
-    leftCol = [];
-    for (var i = 0; i < resOBArray.length; i++) {
-        leftCol.push(resOBArray[i][0]);
-    }
-    var dcRows = getAllIndexes(leftCol, gen);
-    dcVals = [];
-    for (var k = 0; k < 96; k++) {
-        dcVals.push(resOBArray[dcRows[0]][k + 1]);
-    }
-    //search for generator in array of Technical Minimum
-    leftCol = [];
-    for (var i = 0; i < resTNArray.length; i++) {
-        leftCol.push(resTNArray[i][0]);
-    }
-    var tmRows = getAllIndexes(leftCol, gen);
-    tmVals = [];
-    for (var k = 0; k < 96; k++) {
-        tmVals.push(resTNArray[tmRows[0]][k + 1]);
-    }
-    //search for generator in array of Ramp Up
-    leftCol = [];
-    for (var i = 0; i < resRUPArray.length; i++) {
-        leftCol.push(resRUPArray[i][0]);
-    }
-    var rUpRows = getAllIndexes(leftCol, gen);
-    rUpVals = [];
-    for (var k = 0; k < 96; k++) {
-        rUpVals.push(resRUPArray[rUpRows[0]][k + 1]);
-    }
-    //search for generator in array of Ramp Down
-    leftCol = [];
-    for (var i = 0; i < resRDNArray.length; i++) {
-        leftCol.push(resRDNArray[i][0]);
-    }
-    var rDnRows = getAllIndexes(leftCol, gen);
-    rDnVals = [];
-    for (var k = 0; k < 96; k++) {
-        rDnVals.push(resRDNArray[rDnRows[0]][k + 1]);
-    }
-    console.log("rrasUpVals");
-    console.log(rrasUpVals);
-    console.log("schVals");
-    console.log(schVals);
-    console.log("dcVals");
-    console.log(dcVals);
-    console.log("tmVals");
-    console.log(tmVals);
-    console.log("rUpVals");
-    console.log(rUpVals);
-    console.log("rDnVals");
-    console.log(rDnVals);
+		//highlight if rras down changed
+		if(data[i]["rrasdownRes"] != data[i]["rrasdown"]){
+			if (!changes[i]) {
+				changes[i] = {};
+			}
+			changes[i]["rrasdownRes"] = "changed";
+		}
+	}
+	mGrid.setData(data);
+	mGrid.setCellCssStyles("highlight", changes);
+	mGrid.render();
 }
