@@ -142,4 +142,20 @@ function rrasSolve(){
 	mGrid.setData(data);
 	mGrid.setCellCssStyles("highlight", changes);
 	mGrid.render();
+	createRRASText();
+}
+
+function createRRASText(){
+	var rrasUpCpys = [];
+	var rrasDnCpys = [];
+	var data = mGrid.getData();
+	for(var i=0;i<96;i++){
+		rrasUpCpys[i] = data[i]["rrasupRes"];
+		rrasDnCpys[i] = data[i]["rrasdownRes"];
+	}
+	var copyStr = "";
+	copyStr += rrasUpCpys.join("\t");
+	copyStr += "\n";
+	copyStr += rrasDnCpys.join("\t");
+	console.log("rras copy string is " + copyStr);
 }
