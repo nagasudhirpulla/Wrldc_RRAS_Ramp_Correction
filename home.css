@@ -36,3 +36,7 @@
   background-color: #efefef;
   text-align: center;
 }
+
+.changed {
+    background: pink;
+}
