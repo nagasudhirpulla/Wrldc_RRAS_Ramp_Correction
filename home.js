@@ -1,5 +1,5 @@
 var mRldcIdsArray = [];
-var grid; //The cell grid object.
+var mGrid; //The cell grid object.
 document.onreadystatechange = function () {
     if (document.readyState == "interactive") {
 
@@ -17,11 +17,12 @@ function getDisplayCodes() {
 	for(var i= 0 ;i<96;i++){
 		data.push({"blk":i+1, "netschedule":"0", "ramp":"70", "dc":"0", "techmin":"0", "isgs":"0", "rrasup":"0","rrasdown":"0", "newnetschedule":"0", "rrasupRes":"0","rrasdownRes":"0"});
 	}
-	grid = setUpGrid(data);
+	mGrid = setUpGrid(data);
 }
 
 function rrasSolve(){
-	var data = grid.getData();
+	var changes = {};
+	var data = mGrid.getData();
 	//first strip commas and convert negative values to possitive for net schedule,rras up and down
 	for(var i= 0;i<96;i++){
 		data[i]["netschedule"] = data[i]["netschedule"].replace(/\,/g,'');
@@ -120,8 +121,25 @@ function rrasSolve(){
 			data[i]["rrasupRes"] = 0;
 		}
 		//correct the newnetschedule after changes
-		data[i]["newnetschedule"] = data[i]["isgs"] + data[i]["rrasupRes"] - data[i]["rrasdownRes"]
+		data[i]["newnetschedule"] = data[i]["isgs"] + data[i]["rrasupRes"] - data[i]["rrasdownRes"];
+
+		//highlight if rras up changed
+		if(data[i]["rrasupRes"] != data[i]["rrasup"]){
+			if (!changes[i]) {
+				changes[i] = {};
+			}
+			changes[i]["rrasupRes"] = "changed";
+		}
+
+		//highlight if rras down changed
+		if(data[i]["rrasdownRes"] != data[i]["rrasdown"]){
+			if (!changes[i]) {
+				changes[i] = {};
+			}
+			changes[i]["rrasdownRes"] = "changed";
+		}
 	}
-	grid.setData(data);
-	grid.render();
+	mGrid.setData(data);
+	mGrid.setCellCssStyles("highlight", changes);
+	mGrid.render();
 }
