@@ -18,6 +18,10 @@
             <br>
         </div>
         <button onclick="rrasSolve()">Correct RRAS</button>
+        <div>
+		    Select all scheduling files:
+		    <input type="file" id="fileInput" multiple="multiple">
+		</div>
         <mark style="margin-left:100px">Note: "RAMP" column values should be possitive</mark>
     </div>
     <div id='footer' style='margin-bottom:0;margin-top:3em;background-color:#217346;color:#EEEEEE;width:100%;padding-top:5px;padding-left:1em;height:5em'>
@@ -41,6 +45,9 @@
     <script src="./libs/slickgridlibs/plugins/ext.overlays.js"></script>
     <!--<script src="./libs/slickgridlibs/slick.dataview.js"></script>-->
     <script src="./libs/slickgridlibs/plugins/slick.autocolumnsize.js"></script>
+    
+    <script src="csvToArray.js"></script>
+    <script src="index.js"></script>
     
     <script src="./SetupGrid.js"></script>
     <script src="home.js"></script>
