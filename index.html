@@ -12,7 +12,8 @@
 </head>
 <body style='max-width:100%;overflow-x: hidden;'>
     <div id='container' style="padding-left:10px;width:100%">
-        <h1>RRAS Correction Tool</h1>
+        <h1 style="display:inline-block">RRAS Correction Tool</h1>
+        <select style="margin-left:20px" name="gen_select" id="gen_select" onchange="getGenVals()"></select>
         <div id="codes_display_div" style="margin-right:20px;margin-left:20px">
             <div id="myGrid" style="height:500px;border: 1px solid #6CD89D"></div>
             <br>
@@ -22,6 +23,7 @@
 		    Select all scheduling files:
 		    <input type="file" id="fileInput" multiple="multiple">
 		</div>
+		<pre id="fileDisplayArea"></pre>
         <mark style="margin-left:100px">Note: "RAMP" column values should be possitive</mark>
     </div>
     <div id='footer' style='margin-bottom:0;margin-top:3em;background-color:#217346;color:#EEEEEE;width:100%;padding-top:5px;padding-left:1em;height:5em'>
