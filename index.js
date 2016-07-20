@@ -1,6 +1,6 @@
 var genNames = [];
 
-var resAIArray;
+var resAIArray = [];
 var resOBArray = [];
 var resSCHArray = [];
 var resRDNArray = [];
@@ -68,7 +68,7 @@ function afterEachRead() {
                 genNames.push(resAIArray[i][0]);
             }
             var unique = genNames.filter(function (elem, index, self) {
-                return index == self.indexOf(elem) && elem.trim()!="";
+                return index == self.indexOf(elem) && elem.trim() != "";
             });
             genNames = unique;
             console.log(genNames);
@@ -138,6 +138,7 @@ function readTextFile(file) {
 
 //for UI
 function populateSelect(genNms, genSelEl) {
+    genSelEl.innerHTML = '';
     for (var i = 0; i < genNms.length; i++) {
         var opt = document.createElement('option');
         opt.innerHTML = genNms[i];
