@@ -42,7 +42,8 @@ function RRASsolver() {
         this.resRDNArray = [];
         this.resRUPArray = [];
         this.resTNArray = [];
-        this.resADArray = [];
+        //A special case scenario since this file may not be present at the location of all scheduling files
+        //this.resADArray = [];
     }
 
 
