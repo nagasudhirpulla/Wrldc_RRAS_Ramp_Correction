@@ -25,6 +25,9 @@ function RRASsolver() {
     this.afterEachRead = afterEachRead.bind(this);
     this.loadNext = loadNext.bind(this);
 
+
+    this.solve = solve.bind(this);
+
     function pushFiles(newFile) {
         this.filesArray.push(newFile);
     }
@@ -128,5 +131,26 @@ function RRASsolver() {
             reader.readAsText(file);
         }
         this.loadNext();
+    }
+
+    //for algorithm
+    function getAllLeftColIndexes(twoDArray, val) {
+        var arr = [];
+        for (var i = 0; i < twoDArray.length; i++) {
+            arr.push(twoDArray[i][0]);
+        }
+        var indexes = [], i = -1;
+        while ((i = arr.indexOf(val, i + 1)) != -1) {
+            indexes.push(i);
+        }
+        return indexes;
+    }
+
+    function solve() {
+        for (var i = 0; i < this.genNames.length; i++) {
+            //get a generator dc, schedule, rras up down, techmin, rampup, rampdown
+            var gen = genNames[i];
+
+        }
     }
 }

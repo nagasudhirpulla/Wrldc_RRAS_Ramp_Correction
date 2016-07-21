@@ -11,5 +11,4 @@ window.onload = function () {
         fileInput.value = "";
         rrasSolver.afterEachRead();
     });
-    //readTextFile("file:///C:/Users/Nagasudhir/Documents/WBESWareHousing/schedules/cgpl-isgs.js");
 };
