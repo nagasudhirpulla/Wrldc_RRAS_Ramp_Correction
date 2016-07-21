@@ -20,12 +20,18 @@ function RRASsolver() {
     this.fileIterator = 0;
     this.filesArray = [];
 
-    this.pushFiles = function (newFile) {
-        this.filesArray.push(newFile);
-    };
+    this.resetAndCreateArrays = resetAndCreateArrays.bind(this);
+    this.pushFiles = pushFiles.bind(this);
+    this.afterEachRead = afterEachRead.bind(this);
+    this.loadNext = loadNext.bind(this);
 
-    this.resetAndCreateArrays = function () {
+    function pushFiles(newFile) {
+        this.filesArray.push(newFile);
+    }
+
+    function resetAndCreateArrays() {
         this.fileIterator = 0;
+        this.filesArray = [];
         //reset all arrays
         this.resAIArray = [];
         this.resOBArray = [];
@@ -34,20 +40,20 @@ function RRASsolver() {
         this.resRUPArray = [];
         this.resTNArray = [];
         this.resADArray = [];
-        this.afterEachRead().bind(this);
-    };
+    }
+
 
     //file reader feature
-    this.loadNext = function () {
+    function loadNext() {
         this.filesArray[this.fileIterator] = null;
         this.fileIterator = this.fileIterator + 1;
         if (this.fileIterator < this.filesArray.length) {
-            this.afterEachRead().bind(this);
+            this.afterEachRead();
         }
-    };
+    }
 
     //file reader feature
-    this.afterEachRead = function () {
+    function afterEachRead() {
         var reader = new FileReader();
         var file = this.filesArray[this.fileIterator];
         if (file.name.includes("WRAI")) {
@@ -69,58 +75,58 @@ function RRASsolver() {
                 this.genNames = unique;
                 console.log(this.genNames);
                 //populateSelect(this.genNames, document.getElementById('gen_select'));
-                this.loadNext().bind(this);
-            };
+                this.loadNext();
+            }.bind(this);
             reader.readAsText(file);
         } else if (file.name.includes("WRIDCOB")) {
             //var reader = new FileReader();
             reader.onload = function (e) {
                 this.resOBArray = CSVToArray(reader.result);
                 //fileDisplayArea.innerText = reader.result;
-                this.loadNext().bind(this);
-            };
+                this.loadNext();
+            }.bind(this);
             reader.readAsText(file);
         } else if (file.name.includes("WRISCH")) {
             //var reader = new FileReader();
             reader.onload = function (e) {
                 this.resSCHArray = CSVToArray(reader.result);
                 //fileDisplayArea.innerText = reader.result;
-                this.loadNext().bind(this);
-            };
+                this.loadNext();
+            }.bind(this);
             reader.readAsText(file);
         } else if (file.name.includes("WRRDN")) {
             //var reader = new FileReader();
             reader.onload = function (e) {
                 this.resRDNArray = CSVToArray(reader.result);
                 //fileDisplayArea.innerText = reader.result;
-                this.loadNext().bind(this);
-            };
+                this.loadNext();
+            }.bind(this);
             reader.readAsText(file);
         } else if (file.name.includes("WRRUP")) {
             //var reader = new FileReader();
             reader.onload = function (e) {
                 this.resRUPArray = CSVToArray(reader.result);
                 //fileDisplayArea.innerText = reader.result;
-                this.loadNext().bind(this);
-            };
+                this.loadNext();
+            }.bind(this);
             reader.readAsText(file);
         } else if (file.name.includes("WRTN")) {
             //var reader = new FileReader();
             reader.onload = function (e) {
                 this.resTNArray = CSVToArray(reader.result);
                 //fileDisplayArea.innerText = reader.result;
-                this.loadNext().bind(this);
-            };
+                this.loadNext();
+            }.bind(this);
             reader.readAsText(file);
         } else if (file.name.includes("WRAD")) {
             //var reader = new FileReader();
             reader.onload = function (e) {
                 this.resADArray = CSVToArray(reader.result);
                 //fileDisplayArea.innerText = reader.result;
-                this.loadNext().bind(this);
-            };
+                this.loadNext();
+            }.bind(this);
             reader.readAsText(file);
         }
-        this.loadNext().bind(this);
+        this.loadNext();
     }
 }

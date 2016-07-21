@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+    <title>RRAS Correction Tool</title>
+    <link rel="shortcut icon" type="image/ico"
+          href="https://raw.githubusercontent.com/nagasudhirpulla/Wrldc_RRAS_Ramp_Correction/gh-pages/favicon.ico"/>
+</head>
+<body>
+<div>
+    Select all scheduling files:
+    <input type="file" id="fileInput" multiple="multiple">
+</div>
+<br>
+<table>
+    <tr>
+        <td>Consider Block</td>
+        <td><input type="number" id="considerBlk" placeholder="Consider Block"></td>
+    </tr>
+    <tr>
+        <td>Solve Block</td>
+        <td><input type="number" id="solveBlk" placeholder="Solve Block"></td>
+    </tr>
+</table>
+<br>
+<textarea id="fileDisplayArea" style="width:650px;overflow: scroll;"></textarea>
+<script src="../csvToArray.js"></script>
+<script src="rras-solver.js"></script>
+<script src="index-rras.js"></script>
+</body>
+</html>
