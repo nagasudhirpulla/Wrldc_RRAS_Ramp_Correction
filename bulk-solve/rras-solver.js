@@ -270,12 +270,12 @@ function RRASsolver() {
             newSchVals[i] = schVals[i];
         }
         //From solveBlk start solving the constraints rampup, rampdown --- schedule<techmin, schedule>dc --- following RRAS trend, in the increasing order of priority from left to right. Tip - Solve the least priority constraint first and then the most priority constraint next
-        for (var i = solveBlk - 1; i < 96; i++) {
-            solveRRASBlkConstraints(isgsVals[i], newRRASUp[i], newRRASDown[i], rUpVals[i], rDnVals[i], dcVals[i], tmVals[i]);
+        for (var i = (solveBlk - 1 > 0) ? solveBlk - 1 : 1; i < 96; i++) {
+            solveRRASBlkConstraints(isgsVals[i], isgsVals[i - 1], newRRASUp[i], newRRASUp[i - 1], newRRASDown[i], newRRASDown[i - 1], rUpVals[i], rUpVals[i - 1], rDnVals[i], rDnVals[i - 1], dcVals[i], dcVals[i - 1], tmVals[i], tmVals[i - 1]);
         }
     }
 
-    function solveRRASBlkConstraints(isgsVal, newRRASUp, newRRASDown, rUpVals, rDnVals, dcVals, tmVals) {
+    function solveRRASBlkConstraints(isgsVal, isgsValPrev, newRRASUp, newRRASUpPrev, newRRASDown, newRRASDownPrev, rUpVals, rUpValsPrev, rDnVals, rDnValsPrev, dcVals, dcValsPrev, tmVal, tmValPrev) {
 
     }
 }
