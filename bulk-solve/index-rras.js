@@ -13,8 +13,8 @@ window.onload = function () {
     });
 };
 
-function doRRASSolve(){
+function doRRASSolve() {
     var considerBlk = document.getElementById("consider_blk_input").value;
     var solveBlk = document.getElementById("solve_blk_input").value;
-    rrasSolver.solve(considerBlk, solveBlk);
+    solvedRRASAll = rrasSolver.solve(considerBlk, solveBlk);
 }

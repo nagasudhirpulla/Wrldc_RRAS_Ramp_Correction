@@ -153,6 +153,7 @@ function RRASsolver() {
     }
 
     function solve(considerBlk, solveBlk) {
+        var solvedConsolidatedRRAS = {};
         for (var t = 0; t < this.genNames.length; t++) {
             //get a generator dc, schedule, rras up down, techmin, rampup, rampdown
             var gen = this.genNames[t];
@@ -226,11 +227,17 @@ function RRASsolver() {
             console.log("Generator " + t + " => " + gen + " --- rDnVals");
             console.log(this.rDnVals);
             //Now for this generator all the values are available. So we can apply the algorithm on the generator
-            applyRRASAlgorithm(this.rrasUpVals, this.rrasDownVals, this.nldcRRASUpVals, this.nldcRRASDownVals, this.schVals, this.dcVals, this.tmVals, this.rUpVals, this.rDnVals, considerBlk, solveBlk);
+            var solvedGenRRAS = applyRRASAlgorithm(this.rrasUpVals, this.rrasDownVals, this.nldcRRASUpVals, this.nldcRRASDownVals, this.schVals, this.dcVals, this.tmVals, this.rUpVals, this.rDnVals, considerBlk, solveBlk);
+            solvedConsolidatedRRAS[gen] = {};
+            solvedConsolidatedRRAS[gen]['UP'] = solvedGenRRAS.solvedRRASUp;
+            solvedConsolidatedRRAS[gen]['DOWN'] = solvedGenRRAS.solvedRRASDown;
         }
+        console.log("The consolidated solved RRAS values are ");
+        console.log(solvedConsolidatedRRAS);
+        return solvedConsolidatedRRAS;
     }
 
-    function getBlkValue(blk) {
+    function getBlkNumber(blk) {
         if (isNaN(blk)) {
             blk = 1;
         } else if (Number(blk) < 1 && Number(blk) > 96) {
@@ -242,8 +249,8 @@ function RRASsolver() {
     }
 
     function applyRRASAlgorithm(rrasUpVals, rrasDownVals, nldcRRASUpVals, nldcRRASDownVals, schVals, dcVals, tmVals, rUpVals, rDnVals, considerBlk, solveBlk) {
-        considerBlk = getBlkValue(considerBlk);
-        solveBlk = getBlkValue(solveBlk);
+        considerBlk = getBlkNumber(considerBlk);
+        solveBlk = getBlkNumber(solveBlk);
         //From schedule and RRAS get the current isgs schedule without RRAS [ISGS = Net Schedule - RRAS]
         var isgsVals = [];
         for (var i = 0; i < schVals; i++) {
@@ -265,17 +272,83 @@ function RRASsolver() {
             newRRASUp[i] = nldcRRASUpVals[i];
             newRRASDown[i] = nldcRRASDownVals[i];
         }
+        //initialize solved RRAS as new RRAS
+        for (var i = 0; i < 96; i++) {
+            solvedRRASUp[i] = newRRASUp[i];
+            solvedRRASDown[i] = newRRASDown[i];
+        }
         //Till solveBlk-1, copy the implemented or old net schedule values into the  newNetSchedule column directly
         for (var i = 0; i < solveBlk - 2; i++) {
             newSchVals[i] = schVals[i];
         }
         //From solveBlk start solving the constraints rampup, rampdown --- schedule<techmin, schedule>dc --- following RRAS trend, in the increasing order of priority from left to right. Tip - Solve the least priority constraint first and then the most priority constraint next
         for (var i = (solveBlk - 1 > 0) ? solveBlk - 1 : 1; i < 96; i++) {
-            solveRRASBlkConstraints(isgsVals[i], isgsVals[i - 1], newRRASUp[i], newRRASUp[i - 1], newRRASDown[i], newRRASDown[i - 1], rUpVals[i], rUpVals[i - 1], rDnVals[i], rDnVals[i - 1], dcVals[i], dcVals[i - 1], tmVals[i], tmVals[i - 1]);
+            var solvedBlkRRAS = solveRRASBlkConstraints(isgsVals[i], isgsVals[i - 1], newRRASUp[i], solvedRRASUp[i - 1], newRRASDown[i], solvedRRASDown[i - 1], rUpVals[i], rDnVals[i], dcVals[i], tmVals[i]);
+            solvedRRASUp[i] = solvedBlkRRAS.solvedRRASUp;
+            solvedRRASDown[i] = solvedBlkRRAS.solvedRRASDown;
         }
+        //return the solved RRASUP and solved RRASDOWN in all blocks of the generator
+        return {solvedRRASUp: solvedRRASUp, solvedRRASDown: solvedRRASDown};
     }
 
-    function solveRRASBlkConstraints(isgsVal, isgsValPrev, newRRASUp, newRRASUpPrev, newRRASDown, newRRASDownPrev, rUpVals, rUpValsPrev, rDnVals, rDnValsPrev, dcVals, dcValsPrev, tmVal, tmValPrev) {
+    function solveRRASBlkConstraints(isgsVal, isgsValPrev, newRRASUp, newRRASUpPrev, newRRASDown, newRRASDownPrev, rUpVal, rDnVal, dcVal, tmVal) {
+        var RUPFlag = false;
+        var RDNFlag = false;
+        var TMFlag = false;
+        var DCFlag = false;
 
+        var solvedRRASUp = newRRASUp;
+        var solvedRRASDown = newRRASDown;
+
+        var unsolvedNetSchedule = isgsVal + newRRASUp - newRRASDown;
+        var netSchedulePrev = isgsValPrev + newRRASUpPrev - newRRASDownPrev;
+        var ramped = unsolvedNetSchedule - netSchedulePrev;
+        //RampedUp > RampSpecified --- #Constraint1
+        if (ramped > 0 && ramped > rUpVal) {
+            //example --- ramped = 80;rUpVal = 70
+            RUPFlag = true;
+            //Decrease RRASUP by difference provided that value>=0 and follows trend
+            solvedRRASUp = trendConstraintSolve(solvedRRASUp, -1 * (ramped - rUpVal), newRRASUpPrev);
+            //update the values now
+            ramped = isgsVal + solvedRRASUp - solvedRRASDown;
+            //If the problem persists
+            if (ramped > 0 && ramped > rUpVal) {
+                //Increase RRASDN by difference provided that value>=0 and follows trend
+                solvedRRASDown = trendConstraintSolve(solvedRRASDown, ramped - rUpVal, newRRASDownPrev);
+                //update the values now
+                ramped = isgsVal + solvedRRASUp - solvedRRASDown;
+            }
+        } else if (ramped < 0 && ramped < -rDnVal) { //RampedDown < RampSpecified --- #Constraint2
+            //example --- ramped = -80;rDnVal = 70
+            RDNFlag = true;
+            //Decrease RRASDN by difference provided that value>=0 and follows trend
+            solvedRRASDown = trendConstraintSolve(solvedRRASDown, ramped + rDnVal, newRRASDownPrev);
+            //update the values now
+            ramped = isgsVal + solvedRRASUp - solvedRRASDown;
+            //If the problem persists
+            if (ramped < 0 && ramped < -rDnVal) {
+                //Increase RRASUP by difference provided that value>=0 and follows trend
+                solvedRRASUp = trendConstraintSolve(solvedRRASUp, -ramped - rDnVal, newRRASUpPrev);
+                //update the values now
+                ramped = isgsVal + solvedRRASUp - solvedRRASDown;
+            }
+        }
+        //NewNetSchedule < Tech Min --- #Constraint3
+        if (isgsVal + solvedRRASUp - solvedRRASDown < tmVal) {
+            TMFlag = true;
+            //Decrease RRASDN by difference provided that value>=0 and follows trend
+            solvedRRASDown = trendConstraintSolve(solvedRRASDown, isgsVal + solvedRRASUp - solvedRRASDown - tmVal, newRRASDownPrev);
+            //Not needed to increase RRASUP for this constraint
+        }
+        //NewNetSchedule > DC --- #Constraint4
+        if (isgsVal + solvedRRASUp - solvedRRASDown > dcVal) {
+            DCFlag = true;
+            //Decrease RRASUP by difference provided that value>=0 and follows trend
+            solvedRRASUp = trendConstraintSolve(solvedRRASUp, dcVal - isgsVal - solvedRRASUp + solvedRRASDown, newRRASUpPrev);
+            //Not needed to increase RRASDOWN for this constraint
+        }
+        //TODO detect if the rras changed after solving and use this data for presenting the solved RRAS values in color
+        //TODO return flags also
+        return {solvedRRASUp: solvedRRASUp, solvedRRASDown: solvedRRASDown};
     }
 }
