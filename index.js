@@ -18,7 +18,6 @@ var rDnVals = [];
 var fileIterator = 0;
 var filesArray = [];
 
-var rrasSolver = new RRASsolver();
 //file reader feature
 window.onload = function () {
     var fileInput = document.getElementById('fileInput');
