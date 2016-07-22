@@ -14,13 +14,14 @@
 <table>
     <tr>
         <td>Consider Block</td>
-        <td><input type="number" id="considerBlk" placeholder="Consider Block"></td>
+        <td><input type="number" id="consider_blk_input" placeholder="Consider Block" value="1"></td>
     </tr>
     <tr>
         <td>Solve Block</td>
-        <td><input type="number" id="solveBlk" placeholder="Solve Block"></td>
+        <td><input type="number" id="solve_blk_input" placeholder="Solve Block" value="1"></td>
     </tr>
 </table>
+<button id="rras_solve_button" onclick="doRRASSolve()">Solve The RRAS</button>
 <br>
 <textarea id="fileDisplayArea" style="width:650px;overflow: scroll;"></textarea>
 <script src="../csvToArray.js"></script>
