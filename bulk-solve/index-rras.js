@@ -51,25 +51,40 @@ function doRRASSolve() {
     //now color the table according to the flags
     for (var i = 0; i < gens.length; i++) {
         for (var blk = 0; blk < 96; blk++) {
+            var tableCellUp = presentationTable.rows[blk + 2].cells[1 + 2 * i];
+            var tableCellDown = presentationTable.rows[blk + 2].cells[1 + 2 * i + 1];
+
             if (solvedRRASAll[gens[i]]["RRASUPFlags"][blk] == true) {
                 //paint the table cell
-                addElClass(presentationTable.rows[blk + 2].cells[1 + 2 * i], "ramp_up");
-                addElClass(presentationTable.rows[blk + 2].cells[1 + 2 * i + 1], "ramp_up");
+                addElClass(tableCellUp, "ramp_up");
+                addElClass(tableCellDown, "ramp_up");
             }
             if (solvedRRASAll[gens[i]]["RRASDNFlags"][blk] == true) {
                 //paint the table cell
-                addElClass(presentationTable.rows[blk + 2].cells[1 + 2 * i], "ramp_down");
-                addElClass(presentationTable.rows[blk + 2].cells[1 + 2 * i + 1], "ramp_down");
+                removeElClass(tableCellUp, "ramp_up");
+                removeElClass(tableCellDown, "ramp_up");
+                addElClass(tableCellUp, "ramp_down");
+                addElClass(tableCellDown, "ramp_down");
             }
             if (solvedRRASAll[gens[i]]["RRASTMFlags"][blk] == true) {
                 //paint the table cell
-                addElClass(presentationTable.rows[blk + 2].cells[1 + 2 * i], "tech_min");
-                addElClass(presentationTable.rows[blk + 2].cells[1 + 2 * i + 1], "tech_min");
+                removeElClass(tableCellUp, "ramp_up");
+                removeElClass(tableCellDown, "ramp_up");
+                removeElClass(tableCellUp, "ramp_down");
+                removeElClass(tableCellDown, "ramp_down");
+                addElClass(tableCellUp, "tech_min");
+                addElClass(tableCellDown, "tech_min");
             }
             if (solvedRRASAll[gens[i]]["RRASDCFlags"][blk] == true) {
                 //paint the table cell
-                addElClass(presentationTable.rows[blk + 2].cells[1 + 2 * i], "dc");
-                addElClass(presentationTable.rows[blk + 2].cells[1 + 2 * i + 1], "dc");
+                removeElClass(tableCellUp, "ramp_up");
+                removeElClass(tableCellDown, "ramp_up");
+                removeElClass(tableCellUp, "ramp_down");
+                removeElClass(tableCellDown, "ramp_down");
+                removeElClass(tableCellUp, "tech_min");
+                removeElClass(tableCellDown, "tech_min");
+                addElClass(tableCellUp, "dc");
+                addElClass(tableCellDown, "dc");
             }
         }
     }

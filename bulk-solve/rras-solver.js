@@ -154,6 +154,9 @@ function RRASsolver() {
 
     function solve(considerBlk, solveBlk) {
         var solvedConsolidatedRRAS = {};
+        if (this.resADArray == null || this.resADArray.length == 0) {
+            this.resADArray = this.resAIArray;
+        }
         for (var t = 0; t < this.genNames.length; t++) {
             //get a generator dc, schedule, rras up down, techmin, rampup, rampdown
             var gen = this.genNames[t];
@@ -316,7 +319,7 @@ function RRASsolver() {
         if (change) {
             result = val + change;
         }
-        if (prevVal) {
+        if (prevVal != null) {
             //follow trend => val <= max(val, prevVal)
             result = (result > Math.max(val, prevVal)) ? Math.max(val, prevVal) : result;
         }
