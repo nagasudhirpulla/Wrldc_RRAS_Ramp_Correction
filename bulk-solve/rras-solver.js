@@ -231,6 +231,10 @@ function RRASsolver() {
             solvedConsolidatedRRAS[gen] = {};
             solvedConsolidatedRRAS[gen]['UP'] = solvedGenRRAS.solvedRRASUp;
             solvedConsolidatedRRAS[gen]['DOWN'] = solvedGenRRAS.solvedRRASDown;
+            solvedConsolidatedRRAS[gen]['RRASUPFlags'] = solvedGenRRAS.RRASUPFlags;
+            solvedConsolidatedRRAS[gen]['RRASDNFlags'] = solvedGenRRAS.RRASDNFlags;
+            solvedConsolidatedRRAS[gen]['RRASTMFlags'] = solvedGenRRAS.RRASTMFlags;
+            solvedConsolidatedRRAS[gen]['RRASDCFlags'] = solvedGenRRAS.RRASDCFlags;
         }
         console.log("The consolidated solved RRAS values are ");
         console.log(solvedConsolidatedRRAS);
@@ -253,24 +257,28 @@ function RRASsolver() {
         solveBlk = getBlkNumber(solveBlk);
         //From schedule and RRAS get the current isgs schedule without RRAS [ISGS = Net Schedule - RRAS]
         var isgsVals = [];
-        for (var i = 0; i < schVals; i++) {
-            isgsVals[i] = schVals[i] - rrasUpVals[i] + rrasDownVals[i];
+        for (var i = 0; i < schVals.length; i++) {
+            isgsVals[i] = Number(schVals[i]) - Number(rrasUpVals[i]) + Number(rrasDownVals[i]);
         }
         var newRRASUp = [];
         var newRRASDown = [];
         var solvedRRASUp = [];
         var solvedRRASDown = [];
+        var RRASUPFlags = [];
+        var RRASDNFlags = [];
+        var RRASTMFlags = [];
+        var RRASDCFlags = [];
         var newSchVals = [];
         //if consider block = 3, then the index of array will be 2. Example rrasUpVals[2] for block 3
         //Till considerBlk - 1, copy the old RRASUP, old RRASDN values directly into the new RRASUP, RRASDN columns
         for (var i = 0; i < considerBlk - 2; i++) {
-            newRRASUp[i] = rrasUpVals[i];
-            newRRASDown[i] = rrasDownVals[i];
+            newRRASUp[i] = Number(rrasUpVals[i]);
+            newRRASDown[i] = Number(rrasDownVals[i]);
         }
         //From considerBlk, copy the NLDC RRASUP, NLDC RRASDN values into the new RRASUP, RRASDN columns
         for (var i = considerBlk - 1; i < 96; i++) {
-            newRRASUp[i] = nldcRRASUpVals[i];
-            newRRASDown[i] = nldcRRASDownVals[i];
+            newRRASUp[i] = Number(nldcRRASUpVals[i]);
+            newRRASDown[i] = Number(nldcRRASDownVals[i]);
         }
         //initialize solved RRAS as new RRAS
         for (var i = 0; i < 96; i++) {
@@ -283,12 +291,23 @@ function RRASsolver() {
         }
         //From solveBlk start solving the constraints rampup, rampdown --- schedule<techmin, schedule>dc --- following RRAS trend, in the increasing order of priority from left to right. Tip - Solve the least priority constraint first and then the most priority constraint next
         for (var i = (solveBlk - 1 > 0) ? solveBlk - 1 : 1; i < 96; i++) {
-            var solvedBlkRRAS = solveRRASBlkConstraints(isgsVals[i], isgsVals[i - 1], newRRASUp[i], solvedRRASUp[i - 1], newRRASDown[i], solvedRRASDown[i - 1], rUpVals[i], rDnVals[i], dcVals[i], tmVals[i]);
+            var solvedBlkRRAS = solveRRASBlkConstraints(isgsVals[i], isgsVals[i - 1], newRRASUp[i], solvedRRASUp[i - 1], newRRASDown[i], solvedRRASDown[i - 1], Number(rUpVals[i]), Number(rDnVals[i]), Number(dcVals[i]), Number(tmVals[i]));
             solvedRRASUp[i] = solvedBlkRRAS.solvedRRASUp;
             solvedRRASDown[i] = solvedBlkRRAS.solvedRRASDown;
+            RRASUPFlags[i] = solvedBlkRRAS.RUPFlag;
+            RRASDNFlags[i] = solvedBlkRRAS.RDNFlag;
+            RRASTMFlags[i] = solvedBlkRRAS.TMFlag;
+            RRASDCFlags[i] = solvedBlkRRAS.DCFlag;
         }
         //return the solved RRASUP and solved RRASDOWN in all blocks of the generator
-        return {solvedRRASUp: solvedRRASUp, solvedRRASDown: solvedRRASDown};
+        return {
+            solvedRRASUp: solvedRRASUp,
+            solvedRRASDown: solvedRRASDown,
+            RRASUPFlags: RRASUPFlags,
+            RRASDNFlags: RRASDNFlags,
+            RRASTMFlags: RRASTMFlags,
+            RRASDCFlags: RRASDCFlags
+        };
     }
 
     function trendConstraintSolve(val, change, prevVal) {
@@ -304,6 +323,7 @@ function RRASsolver() {
         result = (result < 0) ? 0 : result;
         return result;
     }
+
     /*
      //tests
      console.log(trendConstraintSolve(70, -80, 140) == 0);
@@ -369,7 +389,13 @@ function RRASsolver() {
             //Not needed to increase RRASDOWN for this constraint
         }
         //TODO detect if the rras changed after solving and use this data for presenting the solved RRAS values in color
-        //TODO return flags also
-        return {solvedRRASUp: solvedRRASUp, solvedRRASDown: solvedRRASDown};
+        return {
+            solvedRRASUp: solvedRRASUp,
+            solvedRRASDown: solvedRRASDown,
+            RUPFlag: RUPFlag,
+            RDNFlag: RDNFlag,
+            TMFlag: TMFlag,
+            DCFlag: DCFlag
+        };
     }
 }

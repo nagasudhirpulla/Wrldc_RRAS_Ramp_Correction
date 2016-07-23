@@ -1,0 +1,24 @@
+.ramp_up{
+    background-color: red;
+}
+
+.ramp_down{
+    background-color: green;
+}
+
+.tech_min{
+    background-color: blue;
+    color: white;
+}
+
+.dc{
+    background-color: yellow;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+table {
+    border-collapse: collapse;
+}
