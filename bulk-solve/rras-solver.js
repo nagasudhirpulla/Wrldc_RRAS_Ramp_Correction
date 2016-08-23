@@ -354,13 +354,15 @@ function RRASsolver() {
             //Decrease RRASUP by difference provided that value>=0 and follows trend
             solvedRRASUp = trendConstraintSolve(solvedRRASUp, -1 * (ramped - rUpVal), newRRASUpPrev);
             //update the values now
-            ramped = isgsVal + solvedRRASUp - solvedRRASDown;
+            unsolvedNetSchedule = isgsVal + solvedRRASUp - solvedRRASDown;
+            ramped = unsolvedNetSchedule - netSchedulePrev;
             //If the problem persists
             if (ramped > 0 && ramped > rUpVal) {
                 //Increase RRASDN by difference provided that value>=0 and follows trend
                 solvedRRASDown = trendConstraintSolve(solvedRRASDown, ramped - rUpVal, newRRASDownPrev);
                 //update the values now
-                ramped = isgsVal + solvedRRASUp - solvedRRASDown;
+                unsolvedNetSchedule = isgsVal + solvedRRASUp - solvedRRASDown;
+                ramped = unsolvedNetSchedule - netSchedulePrev;
             }
         } else if (ramped < 0 && ramped < -rDnVal) { //RampedDown < RampSpecified --- #Constraint2
             //example --- ramped = -80;rDnVal = 70
@@ -368,13 +370,15 @@ function RRASsolver() {
             //Decrease RRASDN by difference provided that value>=0 and follows trend
             solvedRRASDown = trendConstraintSolve(solvedRRASDown, ramped + rDnVal, newRRASDownPrev);
             //update the values now
-            ramped = isgsVal + solvedRRASUp - solvedRRASDown;
+            unsolvedNetSchedule = isgsVal + solvedRRASUp - solvedRRASDown;
+            ramped = unsolvedNetSchedule - netSchedulePrev;
             //If the problem persists
             if (ramped < 0 && ramped < -rDnVal) {
                 //Increase RRASUP by difference provided that value>=0 and follows trend
                 solvedRRASUp = trendConstraintSolve(solvedRRASUp, -ramped - rDnVal, newRRASUpPrev);
                 //update the values now
-                ramped = isgsVal + solvedRRASUp - solvedRRASDown;
+                unsolvedNetSchedule = isgsVal + solvedRRASUp - solvedRRASDown;
+                ramped = unsolvedNetSchedule - netSchedulePrev;
             }
         }
         //NewNetSchedule < Tech Min --- #Constraint3
