@@ -274,7 +274,7 @@ function RRASsolver() {
         var newSchVals = [];
         //if consider block = 3, then the index of array will be 2. Example rrasUpVals[2] for block 3
         //Till considerBlk - 1, copy the old RRASUP, old RRASDN values directly into the new RRASUP, RRASDN columns
-        for (var i = 0; i < considerBlk - 2; i++) {
+        for (var i = 0; i < considerBlk - 1; i++) {
             newRRASUp[i] = Number(rrasUpVals[i]);
             newRRASDown[i] = Number(rrasDownVals[i]);
         }
@@ -289,7 +289,7 @@ function RRASsolver() {
             solvedRRASDown[i] = newRRASDown[i];
         }
         //Till solveBlk-1, copy the implemented or old net schedule values into the  newNetSchedule column directly
-        for (var i = 0; i < solveBlk - 2; i++) {
+        for (var i = 0; i < solveBlk - 1; i++) {
             newSchVals[i] = schVals[i];
         }
         //From solveBlk start solving the constraints rampup, rampdown --- schedule<techmin, schedule>dc --- following RRAS trend, in the increasing order of priority from left to right. Tip - Solve the least priority constraint first and then the most priority constraint next
