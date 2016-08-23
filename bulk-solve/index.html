@@ -8,7 +8,8 @@
 </head>
 <body>
 <div class="wrapper">
-    <div><a href="../" style="float: right;margin-right: 50px;margin-top:10px;text-decoration: none">Single Solve</a></div>
+    <div><a href="../" style="float: right;margin-right: 50px;margin-top:10px;text-decoration: none">Single Solve</a>
+    </div>
     <div>
         Select all scheduling files:
         <input type="file" id="fileInput" multiple="multiple">
@@ -24,11 +25,16 @@
             <td><input type="number" id="solve_blk_input" placeholder="Solve Block" value="1"></td>
         </tr>
     </table>
-    <span style="display:inline-block;background: red;margin-left: 5px;color: white">Red => RampUp Violation</span>
-    <span style="display:inline-block;background: green;margin-left: 5px;color: white">Green => RampDown Violation</span>
-    <span style="display:inline-block;background: yellow;margin-left: 5px">Yellow => Schedule > DC</span>
-    <span style="display:inline-block;background: blue;margin-left: 5px;color: white">Blue => Schedule < Techmin</span>
-    <br>
+    <div style="display: inline-block">
+        <span style="padding:2px;display:inline-block;background: red;margin-left: 25px;color: white">Red => RampUp Violation</span>
+        <span style="padding:2px;display:inline-block;background: green;margin-left: 5px;color: white">Green => RampDown Violation</span>
+        <span style="padding:2px;display:inline-block;background: yellow;margin-left: 5px">Yellow => Schedule > DC</span>
+        <span style="padding:2px;display:inline-block;background: blue;margin-left: 5px;color: white">Blue => Schedule < Techmin</span>
+        <br><br>
+    </div>
+    <div>
+        <span style="font-size: 0.8em;margin-left: 10px">Upload NLDC RRAS file first and then Schedule files next or else upload all files at once; Consider Block = The Block from which NLDC RRAS is to considered; Solve Block = The Block from which the RRAS solving should start. </span>
+    </div>
     <button id="rras_solve_button" onclick="doRRASSolve()">Solve The RRAS</button>
     <br>
     <textarea id="fileDisplayArea" style="width:100%;height:350px;overflow: scroll;"></textarea>
@@ -38,7 +44,8 @@
 <div class='footer'
      style='background-color:#217346;color:#EEEEEE;'>
     The Code for this WebApp is hosted at <a
-        href="https://github.com/nagasudhirpulla/Wrldc_RRAS_Ramp_Correction/blob/gh-pages/bulk-solve/rras-solver.js" target="_blank"
+        href="https://github.com/nagasudhirpulla/Wrldc_RRAS_Ramp_Correction/blob/gh-pages/bulk-solve/rras-solver.js"
+        target="_blank"
         style="color:#dddddd;">https://github.com/nagasudhirpulla/Wrldc_RRAS_Ramp_Correction/blob/gh-pages/bulk-solve/rras-solver.js</a>
 </div>
 <script src="../csvToArray.js"></script>
