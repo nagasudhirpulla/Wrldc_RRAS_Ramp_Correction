@@ -7,26 +7,40 @@
           href="https://raw.githubusercontent.com/nagasudhirpulla/Wrldc_RRAS_Ramp_Correction/gh-pages/favicon.ico"/>
 </head>
 <body>
-<div><a href="../" style="float: right;margin-right: 50px">Single Solve</a></div>
-<div>
-    Select all scheduling files:
-    <input type="file" id="fileInput" multiple="multiple">
+<div class="wrapper">
+    <div><a href="../" style="float: right;margin-right: 50px">Single Solve</a></div>
+    <div>
+        Select all scheduling files:
+        <input type="file" id="fileInput" multiple="multiple">
+    </div>
+    <br>
+    <table style="display: inline-block">
+        <tr>
+            <td>Consider Block</td>
+            <td><input type="number" id="consider_blk_input" placeholder="Consider Block" value="1"></td>
+        </tr>
+        <tr>
+            <td>Solve Block</td>
+            <td><input type="number" id="solve_blk_input" placeholder="Solve Block" value="1"></td>
+        </tr>
+    </table>
+    <span style="display:inline-block;background: red;margin-left: 5px;color: white">Red => RampUp Violation</span>
+    <span style="display:inline-block;background: green;margin-left: 5px;color: white">Green => RampDown Violation</span>
+    <span style="display:inline-block;background: yellow;margin-left: 5px">Yellow => Schedule > DC</span>
+    <span style="display:inline-block;background: blue;margin-left: 5px;color: white">Blue => Schedule < Techmin</span>
+    <br>
+    <button id="rras_solve_button" onclick="doRRASSolve()">Solve The RRAS</button>
+    <br>
+    <textarea id="fileDisplayArea" style="width:100%;height:350px;overflow: scroll;"></textarea>
+    <table id="presentation_table"></table>
+    <div class="push"></div>
 </div>
-<br>
-<table>
-    <tr>
-        <td>Consider Block</td>
-        <td><input type="number" id="consider_blk_input" placeholder="Consider Block" value="1"></td>
-    </tr>
-    <tr>
-        <td>Solve Block</td>
-        <td><input type="number" id="solve_blk_input" placeholder="Solve Block" value="1"></td>
-    </tr>
-</table>
-<button id="rras_solve_button" onclick="doRRASSolve()">Solve The RRAS</button>
-<br>
-<textarea id="fileDisplayArea" style="width:100%;height:350px;overflow: scroll;"></textarea>
-<table id="presentation_table"></table>
+<div class='footer'
+     style='background-color:#217346;color:#EEEEEE;'>
+    The Code for this WebApp is hosted at <a
+        href="https://github.com/nagasudhirpulla/Wrldc_RRAS_Ramp_Correction/blob/gh-pages/bulk-solve/rras-solver.js" target="_blank"
+        style="color:#dddddd;">https://github.com/nagasudhirpulla/Wrldc_RRAS_Ramp_Correction/blob/gh-pages/bulk-solve/rras-solver.js</a>
+</div>
 <script src="../csvToArray.js"></script>
 <script src="rras-solver.js"></script>
 <script src="index-rras.js"></script>
